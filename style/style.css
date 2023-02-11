@@ -1,0 +1,26 @@
+#evaluation-timeline .vis-item {
+    background-color: #da8ee7;
+    color: #333333;
+    border: 1px solid #da8ee7;
+    border-radius: 5px;
+    font-size: 12px;
+    }
+
+
+#toxicite-timeline .vis-item {
+    background-color: #b3e5fc;
+    color: #333333;
+    border: 1px solid #b3e5fc;
+    border-radius: 5px;
+    font-size: 12px;
+  }
+
+
+#traitement-timeline .vis-item {
+    background-color: #f7d358;
+    color: #333333;
+    border: 1px solid #f7d358;
+    border-radius: 5px;
+    font-size: 12px;
+    
+  }
