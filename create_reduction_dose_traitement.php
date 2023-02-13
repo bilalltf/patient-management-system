@@ -1,5 +1,6 @@
 <?php
 session_start();
+require 'dbcon.php';
 ?>
 
 <!doctype html>
@@ -29,29 +30,51 @@ session_start();
                         </h4>
                     </div>
                     <div class="card-body">
-                        <form action="code.php" method="POST">
-
-                            <input type="hidden" name="N_sejour" value="<?=$_GET['N_sejour']; ?>">
-
-
-                            <div class="mb-3">
-                                <label>Nom du traitement</label>
-                                <input type="text" name="nom_trait" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label>Pourcentage de réduction</label>
-                                <input type="text" name="reduction" class="form-control">
-                            </div>
-
-                            <div class="mb-3">
-                                <label>Date</label>
-                                <input type="date" name="date" class="form-control">
-                            </div>
-
-                            <div class="mb-3">
-                                <button type="submit" name="save_red_dose_traitement" class="btn btn-success">Enregistrer</button>
-                            </div>
-                        </form>
+                    <?php
+                        if(isset($_GET['N_sejour']))
+                        {
+                            $N_sejour = $_GET['N_sejour'];
+                            $query = "SELECT * FROM traitement WHERE N_sejour = '$N_sejour'";
+                            $query_run = mysqli_query($con, $query);
+                            if(mysqli_num_rows($query_run) > 0)
+                            {
+                                ?>
+                                <form action="code.php" method="POST">
+                                    <input type="hidden" name="N_sejour" value="<?=$_GET['N_sejour']; ?>">
+                                    <div class="mb-3">
+                                        <label>Nom traitement</label>
+                                        <select name="nom_trait" class="form-control">
+                                            <option value=""></option>
+                                            <?php
+                                            foreach($query_run as $row)
+                                            {
+                                                ?>
+                                                <option value="<?= $row['nom_trait']; ?>"><?= $row['nom_trait']; ?></option>
+                                                <?php
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Pourcentage de réduction</label>
+                                        <input type="text" name="reduction" class="form-control">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Date</label>
+                                        <input type="date" name="date" class="form-control">
+                                    </div>
+                                    <div class="mb-3">
+                                        <button type="submit" name="save_red_dose_traitement" class="btn btn-success">Enregistrer</button>
+                                    </div>
+                                </form>
+                                <?php
+                            }
+                            else
+                            {
+                                echo "Au moins un traitement doit être ajouté avant de pouvoir ajouter une réduction de dose de traitement";
+                            }
+                        }
+                    ?>
                     </div>
                 </div>
             </div>

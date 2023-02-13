@@ -69,11 +69,11 @@ session_start();
                             </div>
 
                             <div class="mb-3">
-                                <label>Date de début de traitement local</label>
+                                <label>Date de début</label>
                                 <input type="date" name="date_debut" class="form-control">
                             </div>
                             <div class="mb-3">
-                                <label>Date de fin du traitement local</label>
+                                <label>Date de fin</label>
                                 <input type="date" name="date_fin" class="form-control">
                             </div>
 
@@ -91,12 +91,13 @@ session_start();
 
     
     <script>
-
+        if (document.getElementById('type_trait_loc').value != "Radiothérapie") {
         document.getElementById('type_radiotherapie_div').style.display = 'none';
+        }
         document.getElementById('type_trait_loc').addEventListener('change', function () {
         var style = this.value == "Radiothérapie" ? 'block' : 'none';
         if (style == 'none') {
-            document.getElementById('type_radiotherapie').value = '';
+            document.getElementById('type_radiotherapie').value = none;
         }
         document.getElementById('type_radiotherapie_div').style.display = style;
     });

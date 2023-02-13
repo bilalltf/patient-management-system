@@ -15,7 +15,9 @@
     <title>Patients MS</title>
 </head>
 <body>
-    <h1 class="text-center">Système de gestion des patients</h1>
+    <h1 class="display-1" style="text-align: center;">Système de gestion des patients</h1>
+    
+
 
 
 
@@ -36,7 +38,7 @@
                         </h4>
                     </div>
                     <div class="input-group">
-                        <input type="serch" id="myInput" onkeyup="myFunction()" placeholder="Recherche par N° Séjour" class="form-control rounded">
+                        <input type="serch" id="myInput" onkeyup="myFunction()" placeholder="Filtrer par N° Séjour" class="form-control rounded">
 
                     </div>
                     <div class="card-body">
@@ -74,9 +76,8 @@
                                                     <a href="view_patient.php?N_sejour=<?= $patient['N_sejour']; ?>" class="btn btn-info btn-sm">Afficher</a>
                                                     <a href="edit_patient.php?N_sejour=<?= $patient['N_sejour']; ?>" class="btn btn-success btn-sm">Modifier</a>
                                                     
-                                                    <form action="code.php" method="POST" class="d-inline">
-                                                        <button type="submit" name="delete_patient" value="<?=$patient['N_sejour'];?>" class="btn btn-danger btn-sm">Supprimer</button>
-                                                    </form>
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeletePatient(<?= $patient['N_sejour']; ?>)">Supprimer</button>
+
                                                 </td>
                                             </tr>
                                             <?php
@@ -109,6 +110,12 @@
                                 }
                                 }       
                             }
+                            }
+
+                            function confirmDeletePatient(N_sejour) {
+                                if (confirm("Voulez-vous vraiment supprimer ce patient ?")) {
+                                    window.location.href = "code.php?delete_patient=" + N_sejour;
+                                }
                             }
                         </script>
 

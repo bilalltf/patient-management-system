@@ -2,9 +2,9 @@
 session_start();
 require 'dbcon.php';
 
-if(isset($_POST['delete_patient']))
+if(isset($_GET['delete_patient']))
 {
-    $patient_id = mysqli_real_escape_string($con, $_POST['delete_patient']);
+    $patient_id = mysqli_real_escape_string($con, $_GET['delete_patient']);
 
     $query = "DELETE FROM patient WHERE N_sejour='$patient_id' ";
     $query_run = mysqli_query($con, $query);
@@ -24,10 +24,10 @@ if(isset($_POST['delete_patient']))
 }
 
 
-if(isset($_POST['delete_traitement']))
+if(isset($_GET['delete_traitement']))
 {
-    $trait_id = mysqli_real_escape_string($con, $_POST['delete_traitement']);
-    $patient_id = mysqli_real_escape_string($con, $_POST['N_sejour']);
+    $trait_id = mysqli_real_escape_string($con, $_GET['delete_traitement']);
+    $patient_id = mysqli_real_escape_string($con, $_GET['N_sejour']);
 
     $query = "DELETE FROM traitement WHERE nom_trait='$trait_id' AND N_sejour='$patient_id' ";
     $query_run = mysqli_query($con, $query);
@@ -46,12 +46,34 @@ if(isset($_POST['delete_traitement']))
     }
 }
 
+if (isset($_GET['delete_pbfa'])) {
+    $id_pbfa = mysqli_real_escape_string($con, $_GET['delete_pbfa']);
+    $patient_id = mysqli_real_escape_string($con, $_GET['N_sejour']);
+
+    $query = "DELETE FROM prelevement_biopsie_fmi_adnc WHERE id_prelevement_b_f_a='$id_pbfa' AND N_sejour='$patient_id' ";
+    $query_run = mysqli_query($con, $query);
+
+    if(mysqli_affected_rows($con) > 0)
+    {
+        $_SESSION['message'] = "Le prélèvement a été supprimé avec succès";
+        header("Location: view_patient.php?N_sejour=$patient_id");
+        exit(0);
+    }
+    else
+    {
+        $_SESSION['message'] = "La suppression du prélèvement a échoué";
+        header("Location: view_patient.php?N_sejour=$patient_id");
+        exit(0);
+    }
+}
 
 
-if(isset($_POST['delete_traitement_local']))
+
+
+if(isset($_GET['delete_traitement_local']))
 {
-    $trait_local_id = mysqli_real_escape_string($con, $_POST['delete_traitement_local']);
-    $patient_id = mysqli_real_escape_string($con, $_POST['N_sejour']);
+    $trait_local_id = mysqli_real_escape_string($con, $_GET['delete_traitement_local']);
+    $patient_id = mysqli_real_escape_string($con, $_GET['N_sejour']);
 
     $query = "DELETE FROM traitement_local WHERE nom_trait_local='$trait_local_id' AND N_sejour='$patient_id' ";
     $query_run = mysqli_query($con, $query);
@@ -73,11 +95,11 @@ if(isset($_POST['delete_traitement_local']))
 
 
 
-if(isset($_POST['delete_evaluation']))
+if(isset($_GET['delete_evaluation']))
 {
-    $id_evaluation_traitement = mysqli_real_escape_string($con, $_POST['delete_evaluation']);
-    $patient_id = mysqli_real_escape_string($con, $_POST['N_sejour']);
-    $nom_trait = mysqli_real_escape_string($con, $_POST['nom_trait']);
+    $id_evaluation_traitement = mysqli_real_escape_string($con, $_GET['delete_evaluation']);
+    $patient_id = mysqli_real_escape_string($con, $_GET['N_sejour']);
+    $nom_trait = mysqli_real_escape_string($con, $_GET['nom_trait']);
 
 
     $query = "DELETE FROM evaluation_traitement WHERE id_evaluation_traitement='$id_evaluation_traitement' AND N_sejour='$patient_id' AND nom_trait='$nom_trait' ";
@@ -97,11 +119,11 @@ if(isset($_POST['delete_evaluation']))
     }
 }
 
-if(isset($_POST['delete_toxicite']))
+if(isset($_GET['delete_toxicite']))
 {
-    $id_toxicite = mysqli_real_escape_string($con, $_POST['delete_toxicite']);
-    $patient_id = mysqli_real_escape_string($con, $_POST['N_sejour']);
-    $nom_trait = mysqli_real_escape_string($con, $_POST['nom_trait']);
+    $id_toxicite = mysqli_real_escape_string($con, $_GET['delete_toxicite']);
+    $patient_id = mysqli_real_escape_string($con, $_GET['N_sejour']);
+    $nom_trait = mysqli_real_escape_string($con, $_GET['nom_trait']);
 
     $query = "DELETE FROM toxicite_traitement WHERE id_toxicite_traitement='$id_toxicite' AND N_sejour='$patient_id' AND nom_trait='$nom_trait' ";
     $query_run = mysqli_query($con, $query);
@@ -121,11 +143,12 @@ if(isset($_POST['delete_toxicite']))
 }
 
 
-if(isset($_POST['delete_reduction_dose_traitement']))
+if(isset($_GET['delete_reduction_dose']))
 {
-    if(confirm("Etes-vous sûr de vouloir supprimer cette réduction de dose ?"))
-    {
-        $query = "DELETE FROM reduction_dose_traitement WHERE id_red_dose_traitement='$id_reduction_dose' AND N_sejour='$patient_id' AND nom_trait='$nom_trait' ";
+    $id_red_dose_traitement = mysqli_real_escape_string($con, $_GET['delete_reduction_dose']);
+    $patient_id = mysqli_real_escape_string($con, $_GET['N_sejour']);
+    $nom_trait = mysqli_real_escape_string($con, $_GET['nom_trait']);
+        $query = "DELETE FROM reduction_dose_traitement WHERE id_red_dose_traitement='$id_red_dose_traitement' AND N_sejour='$patient_id' AND nom_trait='$nom_trait' ";
         $query_run = mysqli_query($con, $query);
     
         if(mysqli_affected_rows($con) > 0)
@@ -136,17 +159,10 @@ if(isset($_POST['delete_reduction_dose_traitement']))
         }
         else
         {
-            $_SESSION['message'] = "La suppression de la réduction de dose a échoué";
+            $_SESSION['message'] = mysqli_error($con);
             header("Location: view_patient.php?N_sejour=$patient_id");
             exit(0);
         }
-    }
-    else
-    {
-        header("Location: view_patient.php?N_sejour=$patient_id");
-        exit(0);
-    }
-    
 }
 
 
@@ -182,14 +198,42 @@ if(isset($_POST['update_patient']))
 
 }
 
+
+if(isset($_POST['update_prelevement_biopsie_fmi_adnc']))
+{
+    $patient_id = mysqli_real_escape_string($con, $_POST['N_sejour']);
+    $id_prelevement_b_f_a = mysqli_real_escape_string($con, $_POST['id_prelevement_b_f_a']);
+    $date = mysqli_real_escape_string($con, $_POST['date']);
+    $type = mysqli_real_escape_string($con, $_POST['type']);
+    $resultat = mysqli_real_escape_string($con, $_POST['resultat']);
+
+    $query = "UPDATE prelevement_biopsie_fmi_adnc SET date='$date', type='$type', resultat='$resultat' WHERE id_prelevement_b_f_a='$id_prelevement_b_f_a' AND N_sejour='$patient_id' ";
+    $query_run = mysqli_query($con, $query);
+
+    if($query_run)
+    {
+        $_SESSION['message'] = "Les modifications sont prises en compte!";
+        header("Location: view_patient.php?N_sejour=$patient_id");
+        exit(0);
+    }
+    else
+    {
+        $_SESSION['message'] = "Les modifications ne sont pas prises en compte!";
+        header("Location: edit_prelevement_biopsie_fmi_adnc.php?N_sejour=$patient_id&id_prelevement_b_f_a=$id_prelevement_b_f_a");
+        exit(0);
+    }
+
+}
+
+
 if(isset($_POST['update_traitement']))
 {
     $patient_id = mysqli_real_escape_string($con, $_POST['N_sejour']);
     $trait_id = mysqli_real_escape_string($con, $_POST['nom_trait']);
     $date_debut = mysqli_real_escape_string($con, $_POST['date_debut']);
-    $date_fin = mysqli_real_escape_string($con, $_POST['date_fin']);
+    $date_fin = !empty($_POST['date_fin']) ? "'".mysqli_real_escape_string($con, $_POST['date_fin'])."'" : "NULL";
 
-    $query = "UPDATE traitement SET date_debut='$date_debut', date_fin='$date_fin' WHERE nom_trait='$trait_id' AND N_sejour='$patient_id' ";
+    $query = "UPDATE traitement SET date_debut='$date_debut', date_fin=$date_fin WHERE nom_trait='$trait_id' AND N_sejour='$patient_id' ";
     $query_run = mysqli_query($con, $query);
 
     if($query_run)
@@ -215,10 +259,10 @@ if(isset($_POST['update_traitement_local']))
     $type_trait_loc = mysqli_real_escape_string($con, $_POST['type_trait_loc']);
     $type_radiotherapie = mysqli_real_escape_string($con, $_POST['type_radiotherapie']);
     $date_debut = mysqli_real_escape_string($con, $_POST['date_debut']);
-    $date_fin = mysqli_real_escape_string($con, $_POST['date_fin']);
+    $date_fin = !empty($_POST['date_fin']) ? "'".mysqli_real_escape_string($con, $_POST['date_fin'])."'" : "NULL";
     $site = mysqli_real_escape_string($con, $_POST['site']);
 
-    $query = "UPDATE traitement_local SET type_trait_loc='$type_trait_loc', type_radiotherapie='$type_radiotherapie', date_debut='$date_debut', date_fin='$date_fin', site='$site' WHERE nom_trait_local='$nom_trait_local' AND N_sejour='$patient_id' ";
+    $query = "UPDATE traitement_local SET type_trait_loc='$type_trait_loc', type_radiotherapie='$type_radiotherapie', date_debut='$date_debut', date_fin=$date_fin, site='$site' WHERE nom_trait_local='$nom_trait_local' AND N_sejour='$patient_id' ";
 
     $query_run = mysqli_query($con, $query);
 
@@ -254,11 +298,59 @@ if(isset($_POST['update_evaluation']))
     
     $date_fin = !empty($_POST['date_fin']) ? "'".mysqli_real_escape_string($con, $_POST['date_fin'])."'" : "NULL";
 
+    if($date_fin != "NULL")
+    {
+        $query_update = "UPDATE traitement SET date_fin = $date_fin WHERE nom_trait = '$nom_trait' AND N_sejour = '$patient_id'";
+        $query_run_update = mysqli_query($con, $query_update);
+
+        $update_trait = '';
+
+        if(mysqli_affected_rows($con) > 0)
+        {
+            $update_trait = " et la date de fin du traitement $nom_trait a été mise à jour avec succès!";
+        }
+        else
+        {
+            $update_trait = mysqli_error($con);
+        }
+
+    }
+
     $query = "UPDATE evaluation_traitement SET date_debut='$date_debut', date_fin=$date_fin, site='$site', type_e='$type_e', SETE='$SETE', type_iRECIST='$type_iRECIST', stop_obligoprogression='$stop_obligoprogression' WHERE id_evaluation_traitement='$id_evaluation_traitement' AND nom_trait='$nom_trait' AND N_sejour='$patient_id' ";
 
     $query_run = mysqli_query($con, $query);
 
     if($query_run)
+    {
+        $_SESSION['message'] = "Les modifications sont prises en compte!" . $update_trait;
+        header("Location: view_patient.php?N_sejour=$patient_id");
+        exit(0);
+    }
+    else
+    {
+        $_SESSION['message'] = mysqli_error($con) . $update_trait;
+        header("Location: edit_evaluation.php?N_sejour=$patient_id&nom_trait=$nom_trait&id_evaluation_traitement=$id_evaluation_traitement");
+        exit(0);
+    }
+}
+
+
+if(isset($_POST['update_toxicite']))
+{
+    $patient_id = mysqli_real_escape_string($con, $_POST['N_sejour']);
+    $nom_trait = mysqli_real_escape_string($con, $_POST['nom_trait']);
+    $id_toxicite_traitement = mysqli_real_escape_string($con, $_POST['id_toxicite_traitement']);
+    $type_t = mysqli_real_escape_string($con, $_POST['type_t']);
+    $grade = mysqli_real_escape_string($con, $_POST['grade']);
+    $date_debut = mysqli_real_escape_string($con, $_POST['date_debut']);
+    $fin = mysqli_real_escape_string($con, $_POST['fin']);
+    $date_fin = !empty($_POST['date_fin']) ? "'".mysqli_real_escape_string($con, $_POST['date_fin'])."'" : "NULL";
+
+    $query = "UPDATE toxicite_traitement SET type_t='$type_t', grade='$grade', date_debut='$date_debut', fin='$fin', date_fin=$date_fin WHERE id_toxicite_traitement='$id_toxicite_traitement' AND nom_trait='$nom_trait' AND N_sejour='$patient_id' ";
+
+    $query_run = mysqli_query($con, $query);
+
+    if(mysqli_affected_rows($con) > 0)
     {
         $_SESSION['message'] = "Les modifications sont prises en compte!";
         header("Location: view_patient.php?N_sejour=$patient_id");
@@ -266,11 +358,13 @@ if(isset($_POST['update_evaluation']))
     }
     else
     {
-        $_SESSION['message'] = "Les modifications ne sont pas prises en compte!";
-        header("Location: edit_evaluation.php?N_sejour=$patient_id&nom_trait=$nom_trait&id_evaluation_traitement=$id_evaluation_traitement");
+        $_SESSION['message'] = mysqli_error($con);
+        header("Location: edit_toxicite.php?N_sejour=$patient_id&nom_trait=$nom_trait&id_toxicite_traitement=$id_toxicite_traitement");
         exit(0);
     }
+    
 }
+
 
 if(isset($_POST['update_reduction_dose_traitement']))
 {
@@ -344,9 +438,9 @@ if(isset($_POST['save_traitement_local']))
         $type_radiotherapie = "";
     }
     $date_debut = mysqli_real_escape_string($con, $_POST['date_debut']);
-    $date_fin = mysqli_real_escape_string($con, $_POST['date_fin']);
+    $date_fin = !empty($_POST['date_fin']) ? "'".mysqli_real_escape_string($con, $_POST['date_fin'])."'" : "NULL";
 
-    $query = "INSERT INTO traitement_local (N_sejour, nom_trait_local, type_trait_loc, type_radiotherapie, date_debut, date_fin) VALUES ('$N_sejour', '$nom_trait_local', '$type_trait_loc', '$type_radiotherapie', '$date_debut', '$date_fin')";
+    $query = "INSERT INTO traitement_local (N_sejour, nom_trait_local, type_trait_loc, type_radiotherapie, date_debut, date_fin) VALUES ('$N_sejour', '$nom_trait_local', '$type_trait_loc', '$type_radiotherapie', '$date_debut', $date_fin)";
 
     $query_run = mysqli_query($con, $query);
 
@@ -365,15 +459,40 @@ if(isset($_POST['save_traitement_local']))
 }
 
 
+if(isset($_POST['save_prelevement_b_f_a']))
+{
+    $N_sejour = mysqli_real_escape_string($con, $_POST['N_sejour']);
+    $date = mysqli_real_escape_string($con, $_POST['date']);
+    $type = mysqli_real_escape_string($con, $_POST['type']);
+    $resultat = mysqli_real_escape_string($con, $_POST['resultat']);
+
+    $query = "INSERT INTO prelevement_biopsie_fmi_adnc (N_sejour, date, type, resultat) VALUES ('$N_sejour', '$date', '$type', '$resultat')";
+    $query_run = mysqli_query($con, $query);
+
+    if($query_run)
+    {
+        $_SESSION['message'] = "Le prélèvement a été enregistré avec succès!";
+        header("Location: create_prelevement_biopsie_fmi_adnc.php?N_sejour=$N_sejour");
+        exit(0);
+    }
+    else
+    {
+        $_SESSION['message'] = mysqli_error($con);
+        header("Location: create_prelevement_biopsie_fmi_adnc.php?N_sejour=$N_sejour");
+        exit(0);
+    }
+}
+
 
 if(isset($_POST['save_traitement']))
 {
     $N_sejour = mysqli_real_escape_string($con, $_POST['N_sejour']);
     $nom_trait = mysqli_real_escape_string($con, $_POST['nom_trait']);
     $date_debut = mysqli_real_escape_string($con, $_POST['date_debut']);
-    $date_fin = mysqli_real_escape_string($con, $_POST['date_fin']);
+    $date_fin = !empty($_POST['date_fin']) ? "'".mysqli_real_escape_string($con, $_POST['date_fin'])."'" : "NULL";
 
-    $query = "INSERT INTO traitement (N_sejour, nom_trait, date_debut, date_fin) VALUES ('$N_sejour', '$nom_trait', '$date_debut', '$date_fin')";
+
+    $query = "INSERT INTO traitement (N_sejour, nom_trait, date_debut, date_fin) VALUES ('$N_sejour', '$nom_trait', '$date_debut', $date_fin)";
     $query_run = mysqli_query($con, $query);
 
     if($query_run)
@@ -384,7 +503,7 @@ if(isset($_POST['save_traitement']))
     }
     else
     {
-        $_SESSION['message'] = "L'enregistrement du traitement $nom_trait a échoué!";
+        $_SESSION['message'] = mysqli_error($con);
         header("Location: create_traitement.php?N_sejour=$N_sejour");
         exit(0);
     }
@@ -406,18 +525,35 @@ if(isset($_POST['save_evaluation']))
 
     $query = "INSERT INTO evaluation_traitement (N_sejour, nom_trait, date_debut, date_fin, site, type_e, SETE, type_iRECIST, stop_obligoprogression) VALUES ('$N_sejour', '$nom_trait', '$date_debut', $date_fin, '$site', '$type_e', '$SETE', '$type_iRECIST', '$stop_obligoprogression')";
 
+    $update_trait = "";
+    if($date_fin != "NULL")
+    {
+        $query_update = "UPDATE traitement SET date_fin = $date_fin WHERE nom_trait = '$nom_trait' AND N_sejour = '$N_sejour'";
+        $query_run_update = mysqli_query($con, $query_update);
+
+        if(mysqli_affected_rows($con) > 0)
+        {
+            $update_trait = " et la date de fin du traitement $nom_trait a été mise à jour avec succès!";
+        }
+        else
+        {
+            $update_trait = mysqli_error($con);
+        }
+
+    }
+
 
 
     $query_run = mysqli_query($con, $query);
     if($query_run)
     {
-        $_SESSION['message'] = "L'évaluation du traitement $nom_trait a été enregistrée avec succès!";
+        $_SESSION['message'] = "L'évaluation du traitement $nom_trait a été enregistrée avec succès!" . $update_trait;
         header("Location: create_evaluation.php?N_sejour=$N_sejour");
         exit(0);
     }
     else
     {
-        $_SESSION['message'] = "L'enregistrement de l'évaluation du traitement $nom_trait a échoué!";
+        $_SESSION['message'] = mysqli_error($con) . $update_trait;
         header("Location: create_evaluation.php?N_sejour=$N_sejour");
         exit(0);
     }

@@ -108,7 +108,7 @@ require 'dbcon.php';
                             }
                             else
                             {
-                                echo "<h4>No Such Id Found</h4>";
+                                echo "<h4>Aucun enregistrement trouvé</h4>";
                             }
                         }
                         ?>
@@ -117,6 +117,78 @@ require 'dbcon.php';
             </div>
         </div>
     </div>
+
+
+
+<!-- Prélèvement Biopsie/FMI/ADNc  -->
+
+<div class="container mt-4">
+
+  <?php include('message.php'); ?>
+
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h4>Prélèvement Biopsie/FMI/ADNc
+            <a href="create_prelevement_biopsie_fmi_adnc.php?N_sejour=<?= $patient_id; ?>" class="btn btn-primary float-end">Ajouter
+        </a>
+          </h4>
+        </div>
+        <div class="input-group">
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th> Date </th>
+                    <th> Type </th>
+                    <th> Résultat </th>
+                    <th> Action </th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                if(isset($_GET['N_sejour']))
+                {
+                    $patient_id = mysqli_real_escape_string($con, $_GET['N_sejour']);
+                    $query = "SELECT * FROM prelevement_biopsie_fmi_adnc WHERE N_sejour='$patient_id' ";
+                    $query_run = mysqli_query($con, $query);
+
+                    if(mysqli_num_rows($query_run) > 0)
+                    {
+                        foreach($query_run as $row)
+                        {
+                            ?>
+                            <tr>
+                                <td> <?= $row['date']; ?> </td>
+                                <td> <?= $row['type']; ?> </td>
+                                <td> <?= $row['resultat']; ?> </td>
+                                <td>
+                                    <a href="edit_prelevement_biopsie_fmi_adnc.php?id_prelevement_b_f_a=<?= $row['id_prelevement_b_f_a']; ?>&N_sejour=<?= $patient_id; ?>" class="btn btn-success btn-sm">Modifier</a>
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="confirmDeletePBFA('<?= $row['id_prelevement_b_f_a']; ?>', '<?= $patient_id; ?>')">Supprimer</button>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                    }
+                    else
+                    {
+                        echo "<h4>Aucun enregistrement trouvé</h4>";
+                    }
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+                
+
 
 
     <!-- Traitement local -->
@@ -133,7 +205,7 @@ require 'dbcon.php';
             <div class="card">
                 <div class="card-header">
                     <h4>Liste des traitements locaux
-                        <a href="create_traitement_local.php?N_sejour=<?= $patient_id; ?>" class="btn btn-primary float-end">Ajouter un traitement local</a>
+                        <a href="create_traitement_local.php?N_sejour=<?= $patient_id; ?>" class="btn btn-primary float-end">Ajouter</a>
                     </h4>
                 </div>
                 <div class="input-group">
@@ -177,10 +249,8 @@ require 'dbcon.php';
                                             <td><?=$row['site'];?></td>
                                             <td>
                                                 <a href="edit_traitement_local.php?nom_trait_local=<?= $row['nom_trait_local']; ?>&N_sejour=<?= $patient_id; ?>" class="btn btn-success btn-sm">Modifier</a>
-                                                <form action="code.php" method="POST" class="d-inline">
-                                                <input type="hidden" name="N_sejour" value="<?=$patient_id;?>">
-                                                <button type="submit" name="delete_traitement_local" value="<?=$row['nom_trait_local'];?>" class="btn btn-danger btn-sm">Supprimer</button>
-                                                </form>
+
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="confirmDeleteTraitLocal('<?= $row['nom_trait_local']; ?>', '<?= $patient_id; ?>')">Supprimer</button>
                                             </td>
                                         </tr>
                                         <?php
@@ -188,7 +258,7 @@ require 'dbcon.php';
                                 }
                                 else
                                 {
-                                    echo "<h4>Aucun traitement local trouvé</h4>";
+                                    echo "<h4>Aucun enregistrement trouvé</h4>";
                                 }
                             ?>
                             
@@ -235,7 +305,7 @@ require 'dbcon.php';
                 <div class="card">
                     <div class="card-header">
                         <h4>Liste des traitements
-                            <a href="create_traitement.php?N_sejour=<?= $patient_id; ?>" class="btn btn-primary float-end">Ajouter un traitement</a>
+                            <a href="create_traitement.php?N_sejour=<?= $patient_id; ?>" class="btn btn-primary float-end">Ajouter</a>
                         </h4>
                     </div>
                     <div class="card-body">
@@ -270,10 +340,7 @@ require 'dbcon.php';
                                                 <td>
                                                     <a href="edit_traitement.php?nom_trait=<?= $traitement['nom_trait']; ?>&N_sejour=<?= $patient_id; ?>" class="btn btn-success btn-sm">Modifier</a>
                                                     
-                                                    <form action="code.php" method="POST" class="d-inline">
-                                                        <input type="hidden" name="N_sejour" value="<?= $patient_id; ?>">
-                                                        <button type="submit" name="delete_traitement" value="<?=$traitement['nom_trait'];?>" class="btn btn-danger btn-sm">Supprimer</button>
-                                                    </form>
+                                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteTrait('<?= $traitement['nom_trait']; ?>', '<?= $patient_id; ?>')">Supprimer</button>
                                                 </td>
                                             </tr>
                                             <?php
@@ -281,7 +348,7 @@ require 'dbcon.php';
                                     }
                                     else
                                     {
-                                        echo "<h4>Aucun traitement trouvé</h4>";
+                                        echo "<h4>Aucun enregistrement trouvé</h4>";
                                     }
                                     
                                 ?>
@@ -349,7 +416,7 @@ require 'dbcon.php';
                 <div class="card">
                     <div class="card-header">
                         <h4>Liste des évaluations
-                            <a href="create_evaluation.php?N_sejour=<?= $patient_id; ?>" class="btn btn-primary float-end">Ajouter une évaluation</a>
+                            <a href="create_evaluation.php?N_sejour=<?= $patient_id; ?>" class="btn btn-primary float-end">Ajouter</a>
                         </h4>
                     </div>
                     <div class="input-group">
@@ -397,11 +464,8 @@ require 'dbcon.php';
                                                 <td>
                                                     <a href="edit_evaluation.php?id_evaluation_traitement=<?= $eval['id_evaluation_traitement']; ?>&nom_trait=<?= $eval['nom_trait']; ?>&N_sejour=<?= $patient_id; ?>" class="btn btn-success btn-sm">Modifier</a>
                                                     
-                                                    <form action="code.php" method="POST" class="d-inline">
-                                                        <input type="hidden" name="N_sejour" value="<?= $patient_id; ?>">
-                                                        <input type="hidden" name="nom_trait" value="<?= $eval['nom_trait']; ?>">
-                                                        <button type="submit" name="delete_evaluation" value="<?=$eval['id_evaluation_traitement'];?>" class="btn btn-danger btn-sm">Supprimer</button>
-                                                    </form>
+                                           
+                                                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteEval(<?= $eval['id_evaluation_traitement']; ?>, '<?= $eval['nom_trait']; ?>', <?= $patient_id; ?>)">Supprimer</button>
                                                 </td>
                                             </tr>
                                             <?php
@@ -409,7 +473,7 @@ require 'dbcon.php';
                                     }
                                     else
                                     {
-                                        echo "<h4>Aucune évaluation trouvé</h4>";
+                                        echo "<h4>Aucun enregistrement trouvé</h4>";
                                     }
                                     
                                 ?>
@@ -440,8 +504,8 @@ require 'dbcon.php';
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Liste des toxicité traitement
-                            <a href="create_toxicite.php?N_sejour=<?= $patient_id; ?>" class="btn btn-primary float-end">Ajouter une toxicité</a>
+                        <h4>Liste des toxicités des traitements
+                            <a href="create_toxicite.php?N_sejour=<?= $patient_id; ?>" class="btn btn-primary float-end">Ajouter</a>
                         </h4>
                     </div>
                     <div class="input-group">
@@ -483,13 +547,9 @@ require 'dbcon.php';
                                                 <td><?= $tox['fin']; ?></td>
                                                 <td><?= $tox['date_fin']; ?></td>
                                                 <td>
-                                                    <a href="edit_evaluation.php?id_toxicite_traitement=<?= $tox['id_toxicite_traitement']; ?>&nom_trait=<?= $tox['nom_trait']; ?>&N_sejour=<?= $patient_id; ?>" class="btn btn-success btn-sm">Modifier</a>
-                                                    
-                                                    <form action="code.php" method="POST" class="d-inline">
-                                                        <input type="hidden" name="N_sejour" value="<?= $patient_id; ?>">
-                                                        <input type="hidden" name="nom_trait" value="<?= $tox['nom_trait']; ?>">
-                                                        <button type="submit" name="delete_toxicite" value="<?=$tox['id_toxicite_traitement'];?>" class="btn btn-danger btn-sm">Supprimer</button>
-                                                    </form>
+                                                    <a href="edit_toxicite.php?id_toxicite_traitement=<?= $tox['id_toxicite_traitement']; ?>&nom_trait=<?= $tox['nom_trait']; ?>&N_sejour=<?= $patient_id; ?>" class="btn btn-success btn-sm">Modifier</a>
+                                                
+                                                        <button type="button" class="btn btn-danger btn-sm" onClick="confirmDeleteTox(<?= $tox['id_toxicite_traitement']; ?>, '<?= $tox['nom_trait']; ?>', <?= $patient_id; ?>)">Supprimer</button>
                                                 </td>
                                             </tr>
                                             <?php
@@ -497,7 +557,7 @@ require 'dbcon.php';
                                     }
                                     else
                                     {
-                                        echo "<h4>Aucune toxicité traitement trouvé</h4>";
+                                        echo "<h4>Aucun enregistrement trouvé</h4>";
                                     }
                                     
                                 ?>
@@ -526,7 +586,7 @@ require 'dbcon.php';
       <div class="card">
         <div class="card-header">
           <h4>Liste des réductions de dose traitement
-            <a href="create_reduction_dose_traitement.php?N_sejour=<?= $patient_id; ?>" class="btn btn-primary float-end">Ajouter une toxicité</a>
+            <a href="create_reduction_dose_traitement.php?N_sejour=<?= $patient_id; ?>" class="btn btn-primary float-end">Ajouter</a>
           </h4>
         </div>
         <div class="input-group">
@@ -557,33 +617,11 @@ require 'dbcon.php';
                           <td><?= $red['date']; ?></td>
                           <td>
                             <a href="edit_reduction_dose_traitement.php?id_red_dose_traitement=<?= $red['id_red_dose_traitement']; ?>&nom_trait=<?= $red['nom_trait']; ?>&N_sejour=<?= $patient_id; ?>" class="btn btn-success btn-sm">Modifier</a>
-                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal<?= $red['id_red_dose_traitement']; ?>">Supprimer</button>
-                            
-                            <!-- Confirm Delete Modal -->
-                            <div class="modal fade" id="deleteModal<?= $red['id_red_dose_traitement']; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                              <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Confirmer la suppression</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                      <span aria-hidden="true">&times;</span>
-                                    </button>
-                                  </div>
-                                  <div class="modal-body">
-                                    Êtes-vous sûr de vouloir supprimer cette réduction de dose de traitement?
-                                  </div>
-                                  <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                    <form action="code.php" method="POST" class="d-inline">
-                                        <input type="hidden" name="N_sejour" value="<?= $patient_id; ?>">
-                                        <input type="hidden" name="nom_trait" value="<?= $red['nom_trait']; ?>">
-                                        
-                                        <button type="submit" name="delete_reduction_dose" value="<?=$red['id_red_dose_traitement'];?>" class="btn btn-danger btn-sm">Supprimer</button>
-                                    </form>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                                <input type="hidden" name="N_sejour" value="<?= $patient_id; ?>">
+                                <input type="hidden" name="nom_trait" value="<?= $tox['nom_trait']; ?>">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteRDT(<?= $red['id_red_dose_traitement']; ?>, '<?= $red['nom_trait']; ?>', '<?= $patient_id; ?>')">Supprimer</button>
+
+                           
                           </td>
                         </tr>
                       <?php
@@ -591,7 +629,7 @@ require 'dbcon.php';
                   }
                   else
                   {
-                    echo "<h4>Aucune réduction de dose de traitement trouvé</h4>";
+                    echo "<h4>Aucun enregistrement trouvé</h4>";
                   }
                   
                   ?>
@@ -604,10 +642,46 @@ require 'dbcon.php';
     </div>
 </div>
 
-            
 
+<script>
 
+function confirmDeletePBFA(id_pbfa, N_sejour) {
+    if (confirm("Voulez-vous vraiment supprimer ce prélèvement Biopsie/FMI/ADNc  ?")) {
+        window.location.href = "code.php?delete_pbfa=" + id_pbfa + "&N_sejour=" + N_sejour;
+    }
+}
 
+function confirmDeleteRDT(id_red_dose_traitement, nom_trait, N_sejour) {
+    if (confirm("Voulez-vous vraiment supprimer cette réduction de dose de traitement ?")) {
+        window.location.href = "code.php?delete_reduction_dose=" + id_red_dose_traitement + "&nom_trait=" + nom_trait + "&N_sejour=" + N_sejour;
+    }
+}
+
+function confirmDeleteTox(id_toxicite_traitement, nom_trait, N_sejour) {
+    if (confirm("Voulez-vous vraiment supprimer cette toxicité ?")) {
+        window.location.href = "code.php?delete_toxicite=" + id_toxicite_traitement + "&nom_trait=" + nom_trait + "&N_sejour=" + N_sejour;
+    }
+}
+
+function confirmDeleteEval(id_evaluation, nom_trait, N_sejour) {
+    if (confirm("Voulez-vous vraiment supprimer cette évaluation ?")) {
+        window.location.href = "code.php?delete_evaluation=" + id_evaluation + "&nom_trait=" + nom_trait + "&N_sejour=" + N_sejour;
+    }
+}
+
+function confirmDeleteTrait(nom_trait, N_sejour) {
+    if (confirm("Voulez-vous vraiment supprimer ce traitement ?")) {
+        window.location.href = "code.php?delete_traitement=" + nom_trait + "&N_sejour=" + N_sejour;
+    }
+}
+
+function confirmDeleteTraitLocal(nom_trait_local, N_sejour) {
+    if (confirm("Voulez-vous vraiment supprimer ce traitement local ?")) {
+        window.location.href = "code.php?delete_traitement_local="+ nom_trait_local + "&N_sejour=" + N_sejour;
+    }
+}
+
+</script>
 
 
 
@@ -640,13 +714,13 @@ require 'dbcon.php';
                 <div id="traitement-timeline"></div>
 
                 <div id="evaluation-vis">
-                    <h5>évaluations</h5>
+                    <h5>Évaluations</h5>
                 </div>
 
                 <div id="evaluation-timeline"></div>   
                 
                 <div id="toxicite-vis">
-                    <h5>Toxicités traitement</h5>
+                    <h5>Toxicités et réduction de doses</h5>
                 </div>
 
                 
@@ -668,6 +742,10 @@ require 'dbcon.php';
                     var nom_trait = rows[i].getElementsByTagName("td")[0].textContent;
                     var date_debut = rows[i].getElementsByTagName("td")[1].textContent;
                     var date_fin = rows[i].getElementsByTagName("td")[2].textContent;
+                    // check if the date is empty set today's date in date_fin
+                    if (date_fin == "") {
+                        date_fin = new Date();
+                    }
 
                     // add a new item to the timeline items array
                     items.push({
@@ -707,6 +785,10 @@ require 'dbcon.php';
                     var date_debut = eval_rows[i].getElementsByTagName("td")[1].textContent;
                     var date_fin = eval_rows[i].getElementsByTagName("td")[6].textContent;
                     var stop_obligoprogression = eval_rows[i].getElementsByTagName("td")[7].textContent;
+                    // check if the date is empty set today's date in date_fin
+                    if (date_fin == "") {
+                        date_fin = new Date();
+                    }
 
                     // add a new item to the timeline items array
                     eval_items.push({
@@ -764,6 +846,21 @@ require 'dbcon.php';
 
                 // loop through each row in the toxicite table //
                 var toxicite_rows = document.getElementById("toxicite_table").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+                var reduction_dose_rows = document.getElementById("reduction_dose_table").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+                for (var i = 0; i < reduction_dose_rows.length; i++) {
+                    var nom_trait = reduction_dose_rows[i].getElementsByTagName("td")[0].textContent;
+                    var reduction = reduction_dose_rows[i].getElementsByTagName("td")[1].textContent;
+                    var date = reduction_dose_rows[i].getElementsByTagName("td")[2].textContent;
+                 
+                    // add a new item to the timeline items array
+                    toxicite_items.push({
+                        content: nom_trait,
+                        start: date,
+                        reduction: reduction
+                    });
+                }
+
 
                 for (var i = 0; i < toxicite_rows.length; i++) {
                     var nom_trait = toxicite_rows[i].getElementsByTagName("td")[0].textContent;
@@ -772,6 +869,10 @@ require 'dbcon.php';
                     var date_debut = toxicite_rows[i].getElementsByTagName("td")[3].textContent;
                     var fin = toxicite_rows[i].getElementsByTagName("td")[4].textContent;
                     var date_fin = toxicite_rows[i].getElementsByTagName("td")[5].textContent;
+
+                    if (date_fin == "") {
+                        date_fin = new Date();
+                    }
 
                     // add a new item to the timeline items array
                     toxicite_items.push({
@@ -784,16 +885,24 @@ require 'dbcon.php';
                     });
                 }
 
-                // add a function to options to show the toxicite type and grade in a ticket above the item like in power bi when the user hover the mouse over the item
                 var options = {
 
                         template: function(toxicite_items, element, data) {
-                        var content = toxicite_items.content + "<br>" + 
-                        "Type de toxicité : " + toxicite_items.type_t + "<br>" +
-                        "Grade : " + toxicite_items.grade + "<br>" ;
-                        if (toxicite_items.fin != "" && toxicite_items.fin != null) {
-                            content += "Fin : " + toxicite_items.fin + "<br>" ;
+                        if (toxicite_items.reduction != "" && toxicite_items.reduction != null) {
+                            var content = "Réduction de dose pour le traitement : "+ toxicite_items.content + "<br>" + 
+                            "Pourcentage de réduction : " + toxicite_items.reduction + "%<br>"
+                            // convert the date to a string 
+                            "Date de réduction : " + toxicite_items.start.toISOString() + "<br>" ;
                         }
+                        else {
+                            var content ="Toxicité du traitement : " + toxicite_items.content + "<br>" + 
+                            "Type de toxicité : " + toxicite_items.type_t + "<br>" +
+                            "Grade : " + toxicite_items.grade + "<br>" ;
+                            if (toxicite_items.fin != "" && toxicite_items.fin != null) {
+                                content += "Fin : " + toxicite_items.fin + "<br>" ;
+                            }
+                        }
+                    
                         return content;
                     },
         

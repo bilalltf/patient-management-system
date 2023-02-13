@@ -25,7 +25,7 @@ require 'dbcon.php';
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Modifier un patient 
+                        <h4>Modifier le patient 
                             <a href="index.php" class="btn btn-danger float-end">BACK</a>
                         </h4>
                     </div>

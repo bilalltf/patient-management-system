@@ -1,5 +1,6 @@
 <?php
 session_start();
+require 'dbcon.php';
 ?>
 
 <!doctype html>
@@ -29,25 +30,40 @@ session_start();
                         </h4>
                     </div>
                     <div class="card-body">
-                        <form action="code.php" method="POST">
-
-                            <input type="hidden" name="N_sejour" value="<?=$_GET['N_sejour']; ?>">
-                            <div class="mb-3">
-                                <label>Nom traitement</label>
-                                <input type="text" name="nom_trait" class="form-control">
-                            </div>
-
-                            <div class="mb-3">
-                                <label>Date de début de l'évaluation</label>
-                                <input type="date" name="date_debut" class="form-control">
-                            </div>
-                            <div class="mb-3">
-                                <label>Site</label>
-                                <input type="text" name="site" class="form-control">
-                            </div>
-
-
-                            <div class="mb-3">
+                    <?php
+                        if(isset($_GET['N_sejour']))
+                        {
+                            $N_sejour = $_GET['N_sejour'];
+                            $query = "SELECT * FROM traitement WHERE N_sejour = '$N_sejour' AND date_fin IS NULL";
+                            $query_run = mysqli_query($con, $query);
+                            if(mysqli_num_rows($query_run) > 0)
+                            {
+                                ?>
+                                <form action="code.php" method="POST">
+                                    <input type="hidden" name="N_sejour" value="<?=$_GET['N_sejour']; ?>">
+                                    <div class="mb-3">
+                                        <label>Nom traitement</label>
+                                        <select name="nom_trait" class="form-control">
+                                            <option value=""></option>
+                                            <?php
+                                            foreach($query_run as $row)
+                                            {
+                                                ?>
+                                                <option value="<?= $row['nom_trait']; ?>"><?= $row['nom_trait']; ?></option>
+                                                <?php
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Date de début de l'évaluation</label>
+                                        <input type="date" name="date_debut" class="form-control">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label>Site</label>
+                                        <input type="text" name="site" class="form-control">
+                                    </div>
+                                    <div class="mb-3">
                                 <label>Type évaluation</label>
                                 <select name="type_e" class="form-control">
                                     <option value=""></option>
@@ -96,29 +112,48 @@ session_start();
 
                             <div class="mb-3" id="date_fin_div">
                                 <label>Date de fin de traitement</label>
-                                <input type="date" name="date_fin" class="form-control" id="date_fin">
+                                <input type="date" name="date_fin" id="date_fin" class="form-control" id="date_fin">
                             </div>
 
-
                             <div class="mb-3">
-                                <button type="submit" name="save_evaluation" class="btn btn-primary">Enregistrer</button>
+                                <button type="submit" name="save_evaluation" id="save_evaluation" class="btn btn-primary">Enregistrer</button>
                             </div>
 
                         </form>
-                    </div>
-                </div>
+                        <?php
+                    }
+                    else
+                    {
+                        echo "Au moins un traitement doit être ajouté avant d'ajouter une évaluation";
+                    }
+                }
+                ?>
             </div>
         </div>
     </div>
+</div>
+</div>
+
+
+                        
+
 
     <script>
-        document.getElementById('date_fin_div').style.display = 'none';
-        document.getElementById('type_iRECIST_div').style.display = 'none';
-        document.getElementById('stop_obligoprogression_div').style.display = 'none';
-        document.getElementById('SETE').addEventListener('change', function () {
+      if (document.getElementById('SETE').value != "PD" && document.getElementById('stop_obligoprogression').value != "Oui" && document.getElementById('type_iRECIST').value != "iCPD") {
+            document.getElementById('date_fin_div').style.display = 'none';
+
+        } 
+        if (document.getElementById('SETE').value != "Oligoprogression") {
+            document.getElementById('stop_obligoprogression_div').style.display = 'none';
+        }
+        if (document.getElementById('SETE').value != "iRECIST") {
+            document.getElementById('type_iRECIST_div').style.display = 'none';
+        }
+
+    document.getElementById('SETE').addEventListener('change', function () {
         var style = this.value == "PD" ? 'block' : 'none';
-        document.getElementById('date_fin_div').style.display = style;
         
+        document.getElementById('date_fin_div').style.display = style;
         
     });
 
@@ -140,6 +175,21 @@ session_start();
         var style = this.value == "iCPD" ? 'block' : 'none';
         document.getElementById('date_fin_div').style.display = style;
     });
+
+    document.getElementById('save_evaluation').addEventListener('click', function () {
+        if (document.getElementById('SETE').value != "Oligoprogression") {
+            document.getElementById('stop_obligoprogression').value = null;
+        }
+        if (document.getElementById('SETE').value != "iRECIST") {
+            document.getElementById('type_iRECIST').value = null;
+        }
+        
+        if (document.getElementById('SETE').value != "PD" && document.getElementById('stop_obligoprogression').value != "Oui" && document.getElementById('type_iRECIST').value != "iCPD") {
+            document.getElementById('date_fin').value = null;
+        }
+
+    });
+
     </script>
     
 

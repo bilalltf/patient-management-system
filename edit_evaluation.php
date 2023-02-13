@@ -54,8 +54,8 @@ require 'dbcon.php';
                                     <input type="hidden" name="nom_trait" value="<?= $eval['nom_trait']; ?>">
                                     <input type="hidden" name="N_sejour" value="<?= $eval['N_sejour']; ?>">
 
-                                    <div class="mb-3">
-                                <label>Date de début de l'évaluation</label>
+                            <div class="mb-3">
+                                <label>Date de début</label>
                                 <input type="date" name="date_debut" class="form-control" value="<?= $eval['date_debut']; ?>">
                             </div>
                             <div class="mb-3">
@@ -105,21 +105,21 @@ require 'dbcon.php';
                                 <label>Stop traitement</label>
                                 <select name="stop_obligoprogression" class="form-control" id="stop_obligoprogression">
                                     <option value="" <?php if($eval['stop_obligoprogression'] == '') echo 'selected'; ?>></option>
-                                    <option value="Non" <?php if($eval['stop_obligoprogression'] == 'Non') echo 'selected'; ?>>Non</option>
-                                    <option value="Oui" <?php if($eval['stop_obligoprogression'] == 'Oui') echo 'selected'; ?>>Oui</option>
+                                    <option value="Non" <?php if($eval['stop_obligoprogression'] == 'non') echo 'selected'; ?>>Non</option>
+                                    <option value="Oui" <?php if($eval['stop_obligoprogression'] == 'oui') echo 'selected'; ?>>Oui</option>
                                 </select>
                             </div>
 
 
                             <div class="mb-3" id="date_fin_div">
-                                <label>Date de fin de traitement</label>
-                                <input type="date" name="date_fin" value="<?= $eval['date_fin']; ?>" class="form-control">
+                                <label>Date de fin</label>
+                                <input type="date" name="date_fin" id="date_fin" value="<?= $eval['date_fin']; ?>" class="form-control">
                             </div>
 
 
                                     <div class="mb-3">
                                     <a href="view_patient.php?N_sejour=<?=$_GET['N_sejour']; ?>" class="btn btn-danger">Annuler</a>
-                                        <button type="submit" name="update_evaluation" class="btn btn-primary">
+                                        <button type="submit" name="update_evaluation" id="update_evaluation" class="btn btn-primary">
                                             Enregistrer
                                         </button>
                                     </div>
@@ -140,13 +140,21 @@ require 'dbcon.php';
     </div>
 
     <script>
-        document.getElementById('date_fin_div').style.display = 'none';
-        document.getElementById('type_iRECIST_div').style.display = 'none';
-        document.getElementById('stop_obligoprogression_div').style.display = 'none';
-        document.getElementById('SETE').addEventListener('change', function () {
+        if (document.getElementById('SETE').value != "PD" && document.getElementById('stop_obligoprogression').value != "Oui" && document.getElementById('type_iRECIST').value != "iCPD") {
+            document.getElementById('date_fin_div').style.display = 'none';
+
+        } 
+        if (document.getElementById('SETE').value != "Oligoprogression") {
+            document.getElementById('stop_obligoprogression_div').style.display = 'none';
+        }
+        if (document.getElementById('SETE').value != "iRECIST") {
+            document.getElementById('type_iRECIST_div').style.display = 'none';
+        }
+
+    document.getElementById('SETE').addEventListener('change', function () {
         var style = this.value == "PD" ? 'block' : 'none';
-        document.getElementById('date_fin_div').style.display = style;
         
+        document.getElementById('date_fin_div').style.display = style;
         
     });
 
@@ -168,6 +176,24 @@ require 'dbcon.php';
         var style = this.value == "iCPD" ? 'block' : 'none';
         document.getElementById('date_fin_div').style.display = style;
     });
+
+    document.getElementById('update_evaluation').addEventListener('click', function () {
+        if (document.getElementById('SETE').value != "Oligoprogression") {
+            document.getElementById('stop_obligoprogression').value = null;
+        }
+        if (document.getElementById('SETE').value != "iRECIST") {
+            document.getElementById('type_iRECIST').value = null;
+        }
+        
+        if (document.getElementById('SETE').value != "PD" && document.getElementById('stop_obligoprogression').value != "Oui" && document.getElementById('type_iRECIST').value != "iCPD") {
+            document.getElementById('date_fin').value = null;
+        }
+        
+
+    });
+
+
+    
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

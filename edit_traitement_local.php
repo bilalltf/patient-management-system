@@ -50,13 +50,13 @@ require 'dbcon.php';
                                     <input type="hidden" name="N_sejour" value="<?= $traitement_local['N_sejour']; ?>">
 
                                     <div class="mb-3">
-                                        <label>Nom de traitement local</label>
+                                        <label>Nom du traitement local</label>
                                         <input type="text" name="nom_trait_local" value="<?=$traitement_local['nom_trait_local'];?>" class="form-control">
 
                                     </div>
 
                                     <div class="mb-3">
-                                        <label>Type de traitement local</label>
+                                        <label>Type du traitement local</label>
                                         <select name="type_trait_loc" class="form-control" id="type_trait_loc">
                                             <option value="Radiothérapie" <?php if($traitement_local['type_trait_loc'] == 'Radiothérapie') echo 'selected'; ?>>Radiothérapie</option>
                                             <option value="Radiologie interventionnelle" <?php if($traitement_local['type_trait_loc'] == 'Radiologie interventionnelle') echo 'selected'; ?>>Radiologie interventionnelle</option>
@@ -114,11 +114,13 @@ require 'dbcon.php';
 
     <script>
 
+        if (document.getElementById('type_trait_loc').value != "Radiothérapie") {
         document.getElementById('type_radiotherapie_div').style.display = 'none';
+        }
         document.getElementById('type_trait_loc').addEventListener('change', function () {
         var style = this.value == "Radiothérapie" ? 'block' : 'none';
         if (style == 'none') {
-            document.getElementById('type_radiotherapie').value = '';
+            document.getElementById('type_radiotherapie').value = null;
         }
         document.getElementById('type_radiotherapie_div').style.display = style;
     });

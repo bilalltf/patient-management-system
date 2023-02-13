@@ -13,7 +13,7 @@ require 'dbcon.php';
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <title>Modifier le traitement</title>
+    <title>Modifier le prélèvement Biopsie/FMI/ADNc </title>
 </head>
 <body>
   
@@ -25,7 +25,7 @@ require 'dbcon.php';
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Modifier le traitement 
+                        <h4>Modifier le prélèvement Biopsie/FMI/ADNc 
                        
                         <a href="view_patient.php?N_sejour=<?=$_GET['N_sejour']; ?>" class="btn btn-danger float-end"> BACK</a>
                             
@@ -34,44 +34,45 @@ require 'dbcon.php';
                     <div class="card-body">
 
                         <?php
-                        if(isset($_GET['nom_trait']))
+                        if(isset($_GET['id_prelevement_b_f_a']))
                         {
                             $patient_id = mysqli_real_escape_string($con, $_GET['N_sejour']);
-                            $trait_id = mysqli_real_escape_string($con, $_GET['nom_trait']);
-                            $query = "SELECT * FROM traitement WHERE nom_trait='$trait_id' AND N_sejour='$patient_id'";
+                            
+                            $id_prelevement_b_f_a = mysqli_real_escape_string($con, $_GET['id_prelevement_b_f_a']);
+                            $query = "SELECT * FROM prelevement_biopsie_fmi_adnc WHERE id_prelevement_b_f_a='$id_prelevement_b_f_a' AND N_sejour='$patient_id'";
                             $query_run = mysqli_query($con, $query);
 
                             if(mysqli_num_rows($query_run) > 0)
                             {
-                                $traitement = mysqli_fetch_array($query_run);
+                                $prelevement_biopsie_fmi_adnc = mysqli_fetch_array($query_run);
                                 ?>
                                 <form action="code.php" method="POST">
-                                    <input type="hidden" name="nom_trait" value="<?= $traitement['nom_trait']; ?>">
-                                    <input type="hidden" name="N_sejour" value="<?= $traitement['N_sejour']; ?>">
+                                    <input type="hidden" name="id_prelevement_b_f_a" value="<?= $prelevement_biopsie_fmi_adnc['id_prelevement_b_f_a']; ?>">
+                                    <input type="hidden" name="N_sejour" value="<?= $prelevement_biopsie_fmi_adnc['N_sejour']; ?>">
 
                                     <div class="mb-3">
-                                        <label>Date de début</label>
-                                        <input type="date" name="date_debut" value="<?=$traitement['date_debut'];?>" class="form-control">
+                                        <label>Date</label>
+                                        <input type="text" name="date" value="<?=$prelevement_biopsie_fmi_adnc['date'];?>" class="form-control">
                                     </div>
                                     <div class="mb-3">
-                                        <label>Date de fin</label>
-                                        <input type="date" name="date_fin" value="<?=$traitement['date_fin'];?>" class="form-control">
+                                        <label>Type</label>
+                                        <input type="text" name="type" value="<?=$prelevement_biopsie_fmi_adnc['type'];?>" class="form-control">
                                     </div>
-
+                                    <div class="mb-3">
+                                        <label>Résultat</label>
+                                        <input type="text" name="resultat" value="<?=$prelevement_biopsie_fmi_adnc['resultat'];?>" class="form-control">
+                                    </div>
 
                                     <div class="mb-3">
-                                    <a href="view_patient.php?N_sejour=<?=$_GET['N_sejour']; ?>" class="btn btn-danger">Annuler</a>
-                                        <button type="submit" name="update_traitement" class="btn btn-primary">
-                                            Enregistrer
-                                        </button>
+                                    <a href="view_patient.php?N_sejour=<?=$_GET['N_sejour']; ?>" class="btn btn-danger"> Annuler</a>
+                                    <button type="submit" name="update_prelevement_biopsie_fmi_adnc" class="btn btn-primary">Enregistrer</button>
                                     </div>
-
                                 </form>
                                 <?php
                             }
                             else
                             {
-                                echo "<h4>Aucun traitement trouvé</h4>";
+                                echo "Aucun enregistrement trouvé";
                             }
                         }
                         ?>
